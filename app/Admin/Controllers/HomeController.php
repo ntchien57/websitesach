@@ -34,7 +34,7 @@ class HomeController extends Controller
                 $row->column(3, new InfoBox('Đơn hàng đang giao', 'shopping-cart', 'gray', '/' . config('admin.route.prefix') . '/shop_order', ShopOrder::where('status', 2)->count()));
                 $row->column(3, new InfoBox('Đơn hàng hủy', 'shopping-cart', 'red', '/' . config('admin.route.prefix') . '/shop_order', ShopOrder::where('status', 3)->count()));
                 $row->column(3, new InfoBox('Đơn hàng hoàn thành', 'shopping-cart', 'green', '/' . config('admin.route.prefix') . '/shop_order', ShopOrder::where('status', 4)->count()));
-                $row->column(3, new InfoBox('Đơn hàng trả lại', 'shopping-cart', 'black', '/' . config('admin.route.prefix') . '/shop_order', ShopOrder::where('status', 5)->count()));
+                // $row->column(3, new InfoBox('Đơn hàng trả lại', 'shopping-cart', 'black', '/' . config('admin.route.prefix') . '/shop_order', ShopOrder::where('status', 5)->count()));
             });
 
         $admins = Admin::user()->roles;
