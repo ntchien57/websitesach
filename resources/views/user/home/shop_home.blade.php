@@ -15,11 +15,7 @@
 @endsection
 @section('content')
     <main id="main" class="">
-
-
         <div id="content" role="main" class="content-area">
-
-
             <div class="row row-small slider" id="row-1756791511">
                 <div class="col hide-for-medium medium-3 small-12 large-3">
                     <div class="col-inner">
@@ -142,6 +138,283 @@
 
                 </style>
             </div>
+
+            <section class="section sp-noi-bat" id="section_8974719188">
+                <div class="bg section-bg fill bg-fill  ">
+
+
+
+
+
+                </div>
+                <!-- .section-bg -->
+
+                <div class="section-content relative">
+
+                    <div class="row title" id="row-1986441406">
+                        <div class="col small-12 large-12">
+                            <div class="col-inner">
+                                <div class="tieu-de">
+                                    <div class="img-title"><img
+                                            src="{{ asset('theme/wp-content/uploads/2017/11/dot2345.png') }}"
+                                            width="25px"></div>
+                                    <div class="text">
+                                        <h3 style="color: white;">GIẢM GIÁ GIỜ VÀNG</h3>
+                                    </div>
+                                    <div class="clearboth"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <style scope="scope">
+
+                        </style>
+                    </div>
+                    <div class="row row-small product" id="row-767913575">
+                        <div class="col hide-for-medium medium-12 small-12 large-12">
+                            <div class="col-inner">
+
+
+                                <div class="row large-columns-6 medium-columns-3 small-columns-2 row-small slider row-slider slider-nav-simple slider-nav-push"
+                                    data-flickity-options='{"imagesLoaded": true, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": true,"prevNextButtons": true,"percentPosition": true,"pageDots": false, "rightToLeft": false, "autoPlay" : 3000}'>
+
+
+                                    @if (count($productsFlashsale) > 0)
+                                        @foreach ($productsFlashsale as $item)
+                                            <div class="col">
+                                                <div class="col-inner">
+
+                                                    <div class="badge-container absolute left top z-1">
+                                                    </div>
+                                                    <div class="product-small box has-hover box-normal box-text-bottom">
+                                                        <div class="box-image" style="border-radius:4%;">
+                                                            <div class="image-zoom image-cover" style="padding-top:100%;">
+                                                                <a
+                                                                    href="{{ url('san-pham/' . ktc_str_convert($item->name) . '_' . $item->id . '.html') }}">
+                                                                    <img width="700" height="843"
+                                                                        src="{{ asset('documents/website/' . $item->image) }}"
+                                                                        class="attachment-original size-original wp-post-image"
+                                                                        alt=""
+                                                                        srcset="{{ asset('documents/website/' . $item->image) }} 700w, {{ asset('documents/website/' . $item->image) }} 249w"
+                                                                        sizes="(max-width: 700px) 100vw, 700px"> </a>
+                                                            </div>
+                                                            <div class="image-tools top right show-on-hover">
+                                                            </div>
+                                                            <div
+                                                                class="image-tools grid-tools text-center hide-for-small bottom hover-slide-in show-on-hover">
+                                                            </div>
+                                                        </div>
+                                                        <!-- box-image -->
+
+                                                        <div class="box-text text-center">
+                                                            <div class="title-wrapper">
+                                                                <p class="name product-title"><a
+                                                                        href="{{ url('san-pham/' . ktc_str_convert($item->name) . '_' . $item->id . '.html') }}">{{ $item->name }}</a>
+                                                                </p>
+                                                            </div>
+                                                            @if ($item->price > 0)
+                                                                <span class="price"><span
+                                                                        class="woocommerce-Price-amount amount">{{ number_format($item->flash_price, 0, 0, '.') }}<span
+                                                                            class="woocommerce-Price-currencySymbol">&#8363;</span></span>
+                                                                </span>
+                                                            @else
+                                                                <span class="price"><span
+                                                                        class="woocommerce-Price-amount amount">Liên
+                                                                        hệ</span>
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                        <!-- box-text -->
+                                                    </div>
+                                                    <!-- box -->
+                                                </div>
+                                                <!-- .col-inner -->
+                                            </div>
+                                            <!-- col -->
+                                        @endforeach
+                                    @else
+                                    @endif
+
+
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <style scope="scope">
+
+                        </style>
+                    </div>
+                    <div class="row row-small product" id="row-1975180838">
+                        <div class="col show-for-medium hide-for-small small-12 large-12">
+                            <div class="col-inner">
+
+
+                                <div class="row large-columns-5 medium-columns-3 small-columns-2 row-small slider row-slider slider-nav-simple slider-nav-push"
+                                    data-flickity-options='{"imagesLoaded": true, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": true,"prevNextButtons": true,"percentPosition": true,"pageDots": false, "rightToLeft": false, "autoPlay" : 3000}'>
+
+
+
+
+                                    @if (count($productsFlashsale) > 0)
+                                        @foreach ($productsFlashsale as $item)
+                                            <div class="col">
+                                                <div class="col-inner">
+
+                                                    <div class="badge-container absolute left top z-1">
+                                                    </div>
+                                                    <div class="product-small box has-hover box-normal box-text-bottom">
+                                                        <div class="box-image" style="border-radius:4%;">
+                                                            <div class="image-zoom image-cover" style="padding-top:100%;">
+                                                                <a
+                                                                    href="{{ url('san-pham/' . ktc_str_convert($item->name) . '_' . $item->id . '.html') }}">
+                                                                    <img width="700" height="843"
+                                                                        src="{{ asset('documents/website/' . $item->image) }}"
+                                                                        class="attachment-original size-original wp-post-image"
+                                                                        alt=""
+                                                                        srcset="{{ asset('documents/website/' . $item->image) }} 700w, {{ asset('documents/website/' . $item->image) }} 249w"
+                                                                        sizes="(max-width: 700px) 100vw, 700px"> </a>
+                                                            </div>
+                                                            <div class="image-tools top right show-on-hover">
+                                                            </div>
+                                                            <div
+                                                                class="image-tools grid-tools text-center hide-for-small bottom hover-slide-in show-on-hover">
+                                                            </div>
+                                                        </div>
+                                                        <!-- box-image -->
+
+                                                        <div class="box-text text-center">
+                                                            <div class="title-wrapper">
+                                                                <p class="name product-title"><a
+                                                                        href="{{ url('san-pham/' . ktc_str_convert($item->name) . '_' . $item->id . '.html') }}">{{ $item->name }}</a>
+                                                                </p>
+                                                            </div>
+                                                            <div class="price-wrapper">
+                                                                @if ($item->price > 0)
+                                                                    <span class="price"><span
+                                                                            class="woocommerce-Price-amount amount">{{ number_format($item->flash_price, 0, 0, '.') }}<span
+                                                                                class="woocommerce-Price-currencySymbol">&#8363;</span></span>
+                                                                    </span>
+                                                                @else
+                                                                    <span class="price"><span
+                                                                            class="woocommerce-Price-amount amount">Liên
+                                                                            hệ</span>
+                                                                    </span>
+                                                                @endif
+
+                                                            </div>
+                                                        </div>
+                                                        <!-- box-text -->
+                                                    </div>
+                                                    <!-- box -->
+                                                </div>
+                                                <!-- .col-inner -->
+                                            </div>
+                                            <!-- col -->
+                                        @endforeach
+                                    @else
+                                    @endif
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <style scope="scope">
+
+                        </style>
+                    </div>
+                    <div class="row row-small product" id="row-414283266">
+                        <div class="col show-for-small small-12 large-12">
+                            <div class="col-inner">
+
+
+                                <div class="row large-columns-5 medium-columns-3 small-columns-2 row-small slider row-slider slider-nav-simple slider-nav-push"
+                                    data-flickity-options='{"imagesLoaded": true, "groupCells": "100%", "dragThreshold" : 5, "cellAlign": "left","wrapAround": true,"prevNextButtons": true,"percentPosition": true,"pageDots": false, "rightToLeft": false, "autoPlay" : 3000}'>
+
+
+
+
+                                    @if (count($productsFlashsale) > 0)
+                                        @foreach ($productsFlashsale as $item)
+                                            <div class="col">
+                                                <div class="col-inner">
+
+                                                    <div class="badge-container absolute left top z-1">
+                                                    </div>
+                                                    <div class="product-small box has-hover box-normal box-text-bottom">
+                                                        <div class="box-image" style="border-radius:4%;">
+                                                            <div class="image-zoom image-cover" style="padding-top:100%;">
+                                                                <a
+                                                                    href="{{ url('san-pham/' . ktc_str_convert($item->name) . '_' . $item->id . '.html') }}">
+                                                                    <img width="700" height="843"
+                                                                        src="{{ asset('documents/website/' . $item->image) }}"
+                                                                        class="attachment-original size-original wp-post-image"
+                                                                        alt=""
+                                                                        srcset="{{ asset('documents/website/' . $item->image) }} 700w, {{ asset('documents/website/' . $item->image) }} 249w"
+                                                                        sizes="(max-width: 700px) 100vw, 700px"> </a>
+                                                            </div>
+                                                            <div class="image-tools top right show-on-hover">
+                                                            </div>
+                                                            <div
+                                                                class="image-tools grid-tools text-center hide-for-small bottom hover-slide-in show-on-hover">
+                                                            </div>
+                                                        </div>
+                                                        <!-- box-image -->
+
+                                                        <div class="box-text text-center">
+                                                            <div class="title-wrapper">
+                                                                <p class="name product-title"><a
+                                                                        href="{{ url('san-pham/' . ktc_str_convert($item->name) . '_' . $item->id . '.html') }}">{{ $item->name }}</a>
+                                                                </p>
+                                                            </div>
+                                                            <div class="price-wrapper">
+                                                                <span class="price"><span
+                                                                        class="woocommerce-Price-amount amount">{{ number_format($item->flash_price, 0, 0, '.') }}<span
+                                                                            class="woocommerce-Price-currencySymbol">&#8363;</span></span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <!-- box-text -->
+                                                    </div>
+                                                    <!-- box -->
+                                                </div>
+                                                <!-- .col-inner -->
+                                            </div>
+                                            <!-- col -->
+                                        @endforeach
+                                    @else
+                                    @endif
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <style scope="scope">
+
+                        </style>
+                    </div>
+                </div>
+                <!-- .section-content -->
+
+
+                <style scope="scope">
+                    #section_8974719188 {
+                        padding-top: 30px;
+                        padding-bottom: 30px;
+                        background-color: rgb(243, 239, 246);
+                    }
+
+                    #section_8974719188 .section-bg.bg-loaded {
+                        background: #ebeb49;
+                    }
+                </style>
+            </section>
+
+
             <section class="section sp-noi-bat" id="section_897471918">
                 <div class="bg section-bg fill bg-fill  ">
 

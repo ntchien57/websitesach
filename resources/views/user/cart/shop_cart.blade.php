@@ -88,16 +88,20 @@
                                                                         <span
                                                                             class="mobile-product-price__qty">{{ $cartItem->qty }}
                                                                             x </span>
+
+                                                                           
                                                                         <span
                                                                             class="woocommerce-Price-amount amount"><bdi>{{ number_format($cartItem->price, 0, 0, '.') }}<span
                                                                                     class="woocommerce-Price-currencySymbol">₫</span></bdi></span>
+                                                                            
                                                                     </div>
                                                                 </td>
-
+                                                               
                                                                 <td class="product-price" data-title="Giá">
                                                                     <span class="woocommerce-Price-amount amount"><bdi>{{ number_format($cartItem->price, 0, 0, '.') }}<span
                                                                                 class="woocommerce-Price-currencySymbol">₫</span></bdi></span>
                                                                 </td>
+                                                               
 
                                                                 <td class="product-quantity" data-title="Số lượng">
                                                                     <div class="quantity buttons_added">

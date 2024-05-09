@@ -1333,7 +1333,7 @@ Nhấp chuột vào biểu tượng trợ giúp phía trên để tìm hiểu th
                                         <div class="searchform-wrapper ux-search-box relative form-flat is-normal">
                                             @if (isset(Auth::user()->name))
                                             <div>
-                                                <span style="font-weight:bold; font-size:13px; color: #fff">Xin chào, {{ Auth::user()->name }} /</span> <a style="font-weight:bold; font-size:13px; color: #fff" href="{{ url('dang-xuat.html') }}">Đăng xuất</a>
+                                                <span style="font-weight:bold; font-size:13px; color: #fff">Xin chào, {{ Auth::user()->name }} /</span> <a style="font-weight:bold; font-size:13px; color: #fff" href="{{ url('dang-xuat.html') }}">Đăng xuất</a> <br>
                                                  <a style="font-weight:bold; font-size:13px; color: #fff" href="{{ url('profile.html') }}">Lịch sử mua hàng</a>
                                             </div>
                                             @else
@@ -1415,7 +1415,7 @@ Nhấp chuột vào biểu tượng trợ giúp phía trên để tìm hiểu th
                                 <p>- Email: {{ $configs['site_email'] }}</p>
                                 <p> </p> --}}
 
-                                <div id="fb-root"></div>
+                                {{-- <div id="fb-root"></div>
                                 <p> 
                                     <script>
                                         (function(d, s, id) {
@@ -1429,7 +1429,7 @@ Nhấp chuột vào biểu tượng trợ giúp phía trên để tìm hiểu th
                                     </script>
                                 </p>
                                 <div class="fb-page" data-href="https://www.facebook.com/FacebookVietnam/"
-                                    data-width="340" data-hide-cover="false" data-show-facepile="true"></div>
+                                    data-width="340" data-hide-cover="false" data-show-facepile="true"></div> --}}
 
                             </div>
                         </div>

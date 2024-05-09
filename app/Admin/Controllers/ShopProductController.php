@@ -71,7 +71,6 @@ class ShopProductController extends Controller
 
             $content->header('Tạo sản phẩm mới');
             // $content->description('description');
-
             $content->body($this->form());
         });
     }
@@ -141,8 +140,8 @@ class ShopProductController extends Controller
                 $form->currency('price', 'Giá bán')->symbol('VND')->options(['digits' => 0]);
                 $form->text('quantity', 'Tồn kho')->options(['digits' => 0]);
                 $form->currency('unpromotion_price', 'Giá trước khi giảm')->symbol('VND')->options(['digits' => 0]);
+                $form->currency('flash_price', 'Giảm giá giờ vàng')->symbol('VND')->options(['digits' => 0]);
               
-
                 // $form->divide();
                 $form->radio('type', 'Loại sản phẩm')->options($this->arrType)->default('0');
               

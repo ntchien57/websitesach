@@ -12,7 +12,8 @@
                     <nav class="woocommerce-breadcrumb breadcrumbs"><a href="{{ url('/') }}">Trang chủ</a> <span
                             class="divider">&#47;</span> <a
                             href="{{ url('shop/' . ktc_str_convert($product->category->name) . '_' . $product->category->id . '.html') }}">{{ $product->category->name }}</a>
-                        <span class="divider">&#47;</span> <a>{{ $product->name }}</a></nav>
+                        <span class="divider">&#47;</span> <a>{{ $product->name }}</a>
+                    </nav>
                 </div>
             </div>
             <!-- .flex-left -->
@@ -116,8 +117,9 @@
   }'>
                                         <div class="col is-nav-selected first">
                                             <a>
-                                                <img src="{{ asset('documents/website/' . $product->image) }}" width="300"
-                                                    height="300" class="attachment-woocommerce_thumbnail"> </a>
+                                                <img src="{{ asset('documents/website/' . $product->image) }}"
+                                                    width="300" height="300" class="attachment-woocommerce_thumbnail">
+                                            </a>
                                         </div>
 
                                         @if (count($product->images) > 0)
@@ -155,8 +157,8 @@
 
                                     <p style="font-weight:bold; margin-bottom: 7px; color:#000">Mã sản phẩm:
                                         &nbsp;&nbsp;&nbsp; {{ $product->product_code }}</p>
-                                        <p style="font-weight:bold; margin-bottom: 7px; color:#000">Số lượng:
-                                            &nbsp;&nbsp;&nbsp; {{ $product->quantity }}</p>
+                                    <p style="font-weight:bold; margin-bottom: 7px; color:#000">Số lượng:
+                                        &nbsp;&nbsp;&nbsp; {{ $product->quantity }}</p>
 
                                     {{-- <p><span style="font-weight:bold; border:none; color:#000">Chất liệu:</span><span style="padding-left:50px">{{ $product->material }}</span>   </p>
 
@@ -166,7 +168,12 @@
 
 
                                     <p style="font-weight:bold; margin-bottom: 7px; color:#000">Giá bán: &nbsp;&nbsp;&nbsp;
-                                        @if ($product->price > 0)
+
+                                        @if ($product->flash_price > 0)
+                                        <span style="font-size: 20px"
+                                            class="woocommerce-Price-amount amount">{{ number_format($product->flash_price, 0, 0, '.') }}<span
+                                                class="woocommerce-Price-currencySymbol">&#8363;</span></span>
+                                    @elseif ($product->price > 0)
                                             <span style="font-size: 20px"
                                                 class="woocommerce-Price-amount amount">{{ number_format($product->price, 0, 0, '.') }}<span
                                                     class="woocommerce-Price-currencySymbol">&#8363;</span></span>
@@ -201,9 +208,6 @@
 
 
                                     <div class="product_meta">
-
-
-
 
 
                                         <span class="posted_in">Danh mục: <a
@@ -297,7 +301,12 @@
                                                                 </p>
                                                             </div>
                                                             <div class="price-wrapper">
-                                                                @if ($item->price > 0)
+                                                                @if ($item->flash_price > 0)
+                                                                    <span class="price"><span
+                                                                            class="woocommerce-Price-amount amount">{{ number_format($item->flash_price, 0, 0, '.') }}<span
+                                                                                class="woocommerce-Price-currencySymbol">&#8363;</span></span>
+                                                                    </span>
+                                                                @elseif($item->price > 0)
                                                                     <span class="price"><span
                                                                             class="woocommerce-Price-amount amount">{{ number_format($item->price, 0, 0, '.') }}<span
                                                                                 class="woocommerce-Price-currencySymbol">&#8363;</span></span>
@@ -358,7 +367,11 @@
                                                 class="product-title">{{ $item->name }}</span>
                                         </a>
 
-                                        @if ($item->price > 0)
+                                        @if ($item->flash_price > 0)
+                                            <span
+                                                class="woocommerce-Price-amount amount">{{ number_format($item->flash_price, 0, 0, '.') }}<span
+                                                    class="woocommerce-Price-currencySymbol">&#8363;</span></span>
+                                        @elseif($item->price > 0)
                                             <span
                                                 class="woocommerce-Price-amount amount">{{ number_format($item->price, 0, 0, '.') }}<span
                                                     class="woocommerce-Price-currencySymbol">&#8363;</span></span>

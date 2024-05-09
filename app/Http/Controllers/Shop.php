@@ -72,7 +72,7 @@ class shop extends Controller
         // $this->contact     = ShopBrand::getBrands();
         $this->categories = ShopCategory::getCategories(0);
         $this->configs    = Config::pluck('value', 'key')->all();
-        $this->cartCount = Cart::count();
+        $this->cartCount = Cart::content()->unique('id')->count();
 
 //Config for  SMTP
         config(['app.name' => $this->configs['site_title']]);
@@ -130,7 +130,8 @@ class shop extends Controller
                 'documents'         => (new ShopDocument)->getDocumentByLimit($limit = 8),
                 'blog_first' => $blog_first,
                 'blogs_all' => CmsContent::where('status', 1)->orderByDesc('id')->limit(5)->get(),
-                'categories_hot'=>$categories_hot
+                'categories_hot'=>$categories_hot,
+                'productsFlashsale' => ShopProduct::where('flash_price','>',0)->orderBy('id', 'desc')->get()
             )
         );
     }
@@ -678,7 +679,18 @@ public function allArticle(){
             //2. Active
             //3. Date availabe
             if ($product->status != 0 and ($this->configs['product_preorder'] == 1 || $product->date_available == null || date('Y-m-d H:i:s') >= $product->date_available) and ($this->configs['product_buy_out_of_stock'] || $product->stock)) {
-                
+
+                if($product->flash_price > 0){
+                    Cart::add(
+                        array(
+                            'id'    => $id,
+                            'name'  => $product->name,
+                            'qty'   => $qty,
+                            'price' => $product->flash_price,
+    
+                        )
+                    );
+                }else{
                     Cart::add(
                         array(
                             'id'    => $id,
@@ -688,6 +700,9 @@ public function allArticle(){
     
                         )
                     );
+                }
+                
+                   
                 
             }
 
@@ -1363,10 +1378,16 @@ public function allArticle(){
     public function registerUserPost(Request $request)
     {
             
-        $user = User::where('email',$request->email)->first();
+        $email = User::where('email',$request->email)->first();
+        $phone = User::where('phone',$request->phone)->first();
 
-        if($user){
+
+        if($email){
             return redirect()->back()->with('erorr', 'Email đã tồn tại');              
+        }
+
+        if($phone){
+            return redirect()->back()->with('erorr', 'Số điệnt thoại đã được đăng ký');              
         }
 
         if($request->input('password') != $request->input('again-password') ){
@@ -1377,6 +1398,8 @@ public function allArticle(){
             'name'=> $request->input('name'),
             'email'=> $request->input('email'),
             'password'=>bcrypt($request->input('password')),
+            'address1'=> $request->input('address1'),
+            'phone'=> $request->input('phone'),
         ]);
 
         return redirect()->route('login')->with('message', 'Đăng ký thành công');
