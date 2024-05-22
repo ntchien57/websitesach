@@ -38,6 +38,8 @@ Route::group([
     $router->resource('shop_shipping', ShopShippingController::class);
     $router->get('/getInfoUser', 'ShopOrderController@getInfoUser')->name('getInfoUser');
     $router->get('/getInfoProduct', 'ShopOrderController@getInfoProduct')->name('getInfoProduct');
+    $router->get('/shop_data_statis', 'ShopOrderController@dataStatis')->name('data_statis');
+    $router->get('/show_data_statis', 'ShopOrderController@showDataStatis')->name('show_data_statis');
     $router->get('/shop_order_edit/{id}', 'ShopOrderController@detailOrder')->name('order_edit_get');
     $router->post('/shop_order_edit', 'ShopOrderController@postOrderEdit')->name('order_edit_post');
     $router->any('/shop_order_update', 'ShopOrderController@postOrderUpdate')->name('order_update');

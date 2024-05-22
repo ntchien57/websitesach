@@ -8,10 +8,12 @@ use App\Models\ShopOptionDetail;
 use App\Models\ShopProductType;
 use App\Models\ShopSpecialPrice;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class ShopProduct extends Model
 {
     public $table = 'shop_product';
+
 
     public function brand()
     {
@@ -312,6 +314,22 @@ class ShopProduct extends Model
     {
         parent::boot();
         // before delete() method call this
+        
+        
+            static::saving(function ($product) {
+                // Lấy thời gian hiện tại
+                $currentTime = Carbon::now();
+        
+                // Kiểm tra nếu thời gian bắt đầu chưa đến
+                if ($product->start_time && $currentTime->lt($product->start_time)) {
+                    $product->flash_active = 0; // Đặt flash_active là 0
+                } elseif ($product->start_time && $product->end_time && $currentTime->gte($product->start_time) && $currentTime->lte($product->end_time)) {
+                    $product->flash_active = 1; // Đặt flash_active là 1 nếu trong thời gian bắt đầu và kết thúc
+                } else {
+                    $product->flash_active = 0; // Đặt flash_active là 0 cho mọi trường hợp khác
+                }
+            });
+        
         static::deleting(function ($product) {
             $product->options()->delete();
             $product->likes()->delete();

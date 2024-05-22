@@ -22,7 +22,6 @@ class ShopPromotionController extends Controller
      */
     public $arrType = [
         '0' => 'VNĐ',
-        '1' => 'Point',
         '2' => '%',
     ];
     public function index()
@@ -130,7 +129,7 @@ class ShopPromotionController extends Controller
             $form->number('number_uses', 'Số lần sử dụng')->default(1);
             $form->datetime('expires_at', 'Ngày hết hạn');
             // $form->number('used', 'Đã sử dụng');
-            $form->switch('status', 'Trạng thái');
+            $form->switch('status', 'Trạng thái')->default(1);
             $form->disableViewCheck();
             $form->disableEditingCheck();
             $form->disableCreatingCheck();

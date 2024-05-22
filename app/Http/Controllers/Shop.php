@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Promocodes;
+use App\Promocodes\Models\Promocode;
+use App\Models\PromoCodeUser;
 use Session;
 use View;
 
@@ -131,7 +133,7 @@ class shop extends Controller
                 'blog_first' => $blog_first,
                 'blogs_all' => CmsContent::where('status', 1)->orderByDesc('id')->limit(5)->get(),
                 'categories_hot'=>$categories_hot,
-                'productsFlashsale' => ShopProduct::where('flash_price','>',0)->orderBy('id', 'desc')->get()
+                'productsFlashsale' => ShopProduct::where('flash_active',1)->orderBy('id', 'desc')->get()
             )
         );
     }
@@ -445,7 +447,7 @@ public function allArticle(){
         $id          = Auth::user()->id;
         $user        = User::find($id);
         $orders      = ShopOrder::with('orderTotal')->where('user_id', $id)->orderBy('id', 'desc')->get();
-        $statusOrder = ['0' => 'Mới', '1' => 'Đang xử lý', '2' => 'Tạm giữ', '3' => 'Hủy bỏ', '4' => 'Hoàn thành'];
+        $statusOrder = ['0' => 'Mới', '1' => 'Đang xử lý', '2' => 'Đang giao', '3' => 'Hủy bỏ', '4' => 'Hoàn thành'];
         return view($this->theme . '.shop_profile')->with(array(
             'title_h1'    => 'Trang khách hàng',
             'title'       => 'Trang khách hàng - ' . $this->configs['site_title'],
@@ -907,54 +909,48 @@ public function allArticle(){
         $html   = '';
         $code   = $request->get('code');
         $action = $request->get('action');
-        if ($action === 'remove') {
-            $request->session()->forget('coupon'); //destroy coupon
-            $objects   = array();
-            $objects[] = (new ShopOrderTotal)->getShipping();
-            $objects[] = (new ShopOrderTotal)->getDiscount();
-            $objects[] = (new ShopOrderTotal)->getReceived();
-            $dataTotal = ShopOrderTotal::processDataTotal($objects);
-            foreach ($dataTotal as $key => $element) {
-                if ($element['value'] != 0) {
-                    $html .= "<tr class='showTotal'>
-                         <th>" . $element['title'] . "</th>
-                        <td style='text-align: right' id='" . $element['code'] . "'>" . number_format($element['value']) . " VNĐ</td>
-                    </tr>";
-                }
+        // if ($action === 'remove') {
+        //     $request->session()->forget('coupon'); //destroy coupon
+        //     $objects   = array();
+        //     $objects[] = (new ShopOrderTotal)->getShipping();
+        //     $objects[] = (new ShopOrderTotal)->getDiscount();
+        //     $objects[] = (new ShopOrderTotal)->getReceived();
+        //     $dataTotal = ShopOrderTotal::processDataTotal($objects);
+        //     foreach ($dataTotal as $key => $element) {
+        //         if ($element['value'] != 0) {
+        //             $html .= "<tr class='showTotal'>
+        //                  <th>" . $element['title'] . "</th>
+        //                 <td style='text-align: right' id='" . $element['code'] . "'>" . number_format($element['value']) . " VNĐ</td>
+        //             </tr>";
+        //         }
 
-            }
-            return json_encode(['html' => $html]);
-        }
+        //     }
+        //     return json_encode(['html' => $html]);
+        // }
 
-        $check = json_decode(Promocodes::check($code), true);
-        $value=0;
-        if ($check['error'] == 1) {
+        // $check = json_decode(Promocodes::check($code), true);
+
+        $check = Promocode::where('code', $code)->first();
+        $userId = Auth::user()->id;
+        $checkUser = PromoCodeUser::where('promocode_id', $check['id'])->where('user_id', $userId)->first();
+    
+        if($check == null){
             $error = 1;
-            if ($check['msg'] == 'error_code_not_exist') {
-                $msg = "Mã giảm giá không hợp lệ!";
-            } elseif ($check['msg'] == 'error_code_cant_use') {
-                $msg = "Mã vượt quá số lần sử dụng!";
-            } elseif ($check['msg'] == 'error_code_expired_disabled') {
-                $msg = "Mã hết hạn sử dụng!";
-            } elseif ($check['msg'] == 'error_user_used') {
-                $msg = "Bạn đã dùng mã này rồi!";
-            } else {
-                $msg = "Lỗi không xác định!";
-            }
-
+            $value = 0;
+            $msg = "Mã giảm giá không hợp lệ!";
+        }elseif ($check != null && $checkUser != null) {
+            $error = 1;
+            $value = 0;
+            $msg = "Bạn đã dùng mã giảm giá này rồi!";
         } else {
-            $content = $check['content'];
-            if ($content['type'] === 1) {
-                $error = 1;
-                $msg   = "Bạn không thể dụng mã Point trực tiếp!";
-            } else {
+           
                 $arrType = [
                     '0' => 'VNĐ',
                     '1' => 'Point',
                     '2' => '%',
                 ];
                 $error = 0;
-                $msg   = "Mã giảm giá có giá trị " . number_format($content['reward']) . $arrType[$content['type']] . " cho đơn hàng này.";
+                $msg   = "Mã giảm giá có giá trị " . number_format($check['reward']) . $arrType[$check['type']] . " cho đơn hàng này.";
                 $request->session()->put('coupon', $code);
 
                 $objects   = array();
@@ -962,25 +958,31 @@ public function allArticle(){
                 $objects[] = (new ShopOrderTotal)->getDiscount();
                 $objects[] = (new ShopOrderTotal)->getReceived();
                 $dataTotal = ShopOrderTotal::processDataTotal($objects);
-                $value =  $content['reward'];
+                $value =  $check['reward'];
                 foreach ($dataTotal as $key => $element) {
                     if ($element['value'] != 0) {
                         if ($element['code'] == 'total') {
-                            $html .= "<tr class='showTotal'  style='background:#f5f3f3;font-weight: bold;'>";
-                        } else {
-                            $html .= "<tr class='showTotal'>";
-                        }
+                            // $html .= "<tr class='showTotal'  style='background:#f5f3f3;font-weight: bold;'>";
+                            $afterCoupon = $element['value'] - $value;
+                            $html .= "<th>" . $element['title'] . "</th>
+                        <td style='text-align: right' id='" . $element['code'] . "'><strong><span class='woocommerce-Price-amount amount'>" . number_format($afterCoupon) . "<span class='woocommerce-Price-currencySymbol'>₫</span></span></strong> </td>
+                        
+                   ";}
 
-                        $html .= "<th>" . $element['title'] . "</th>
-                        <td style='text-align: right' id='" . $element['code'] . "'>" . number_format($element['value']) . " VNĐ</td>
-                    </tr>";
+
+                        // } else {
+                        //     $html .= "<tr class='showTotal'>";
+                        // }
+
+                        
                     }
 
                 }
             }
 
-        }
-        return json_encode(['error' => $error, "value" => number_format($value), 'msg' => $msg, 'html' => $html]);
+        // }
+        return json_encode(['error' => $error, "value" => number_format($value), 'msg' => $msg, 'html' => $html, 'code' =>$code, 'check' =>$check]);
+        // return json_encode(['error' => $error, 'msg' => $msg, 'html' => $html, 'code' =>$code]);
 
     }
 

@@ -9,10 +9,6 @@
             <div class="row row-main">
                 <div class="large-12 col">
                     <div class="col-inner">
-
-
-
-
                         <div class="row row-main">
                             <div class="large-12 col">
                                 <div class="col-inner">
@@ -23,35 +19,36 @@
                                             <div class="large-12 col">
                                                 <div class="col-inner">
 
-                                                    <header class="entry-header">
+                                                    <header class="entry-header" style="padding-top: 15px">
                                                         <h1 class="entry-title mb uppercase">Thanh toán</h1>
                                                     </header>
 
 
                                                     <div class="woocommerce">
                                                         <div class="woocommerce-notices-wrapper"></div>
-                                                        {{-- <div class="woocommerce-form-coupon-toggle">
+                                                        <div class="woocommerce-form-coupon-toggle">
 
                                                     <div class="woocommerce-info message-wrapper">
                                                         <div class="message-container container medium-text-center">
                                                             Bạn có mã ưu đãi? <a href="#" class="showcoupon">Ấn vào đây để nhập mã</a> </div>
                                                     </div>
-                                                </div> --}}
+                                                </div>
 
-                                                        {{-- <form action="" class="checkout_coupon woocommerce-form-coupon has-border is-dashed" method="post" style="display:none">
+                                                       <form action="" class="checkout_coupon woocommerce-form-coupon has-border is-dashed" method="post" style="display:none">
 
                                                     <p>Nếu bạn có mã giảm giá, vui lòng điền vào phía bên dưới.</p>
                                                     <div class="coupon">
                                                         <div class="flex-row medium-flex-wrap">
                                                             <div class="flex-col flex-grow">
-                                                                <input type="text" name="coupon_code" class="input-text" placeholder="Mã ưu đãi" id="coupon_code" value="">
+                                                                <input type="text" name="coupon_code" class="input-text" placeholder="Mã ưu đãi" id="coupon-value" value="">
                                                             </div>
                                                             <div class="flex-col">
-                                                                <button type="submit" class="button expand" name="apply_coupon" value="Áp dụng">Áp dụng</button>
-                                                            </div>
+                                                                <button id="coupon-button" type="button" class="button expand" name="apply_coupon" value="Áp dụng">Áp dụng</button>
+                                                            </div>                                                           
                                                         </div>
                                                     </div>
-                                                </form> --}}
+                                                    <div class="coupon-msg" style="color: rgb(196, 62, 62); padding-top:10px"></div>
+                                                </form>
                                                         <div class="woocommerce-notices-wrapper"></div>
 
                                                         @if (Auth::user())
@@ -266,6 +263,10 @@
                                                                                                     class="woocommerce-Price-amount amount">{{ Cart::subtotal(0, 0, '.') }}<span
                                                                                                         class="woocommerce-Price-currencySymbol">₫</span></span></strong>
                                                                                         </td>
+                                                                                    </tr>
+
+                                                                                    <tr class="order-total" id="showTotal">
+
                                                                                     </tr>
 
 
@@ -564,11 +565,6 @@
                                                                                         </td>
                                                                                     </tr>
 
-
-
-
-
-
                                                                                     <tr class="order-total">
                                                                                         <th>Tổng</th>
                                                                                         <td><strong><span
@@ -576,7 +572,9 @@
                                                                                                         class="woocommerce-Price-currencySymbol">₫</span></span></strong>
                                                                                         </td>
                                                                                     </tr>
+                                                                                    <tr class="order-total" id="showTotal">
 
+                                                                                    </tr>
 
                                                                                 </tfoot>
                                                                             </table>
@@ -821,6 +819,13 @@
 @endsection
 
 @push('scripts')
+<script>
+    document.querySelector('.showcoupon').addEventListener('click', function(event) {
+        event.preventDefault();
+        var couponForm = document.querySelector('.checkout_coupon');
+        couponForm.style.display = 'block';
+    });
+</script>
     <script>
         var hiddenSubmitBtn = document.getElementById('hidden-submit-btn');
         document.getElementById("checkout-button").onclick = function() {
@@ -876,6 +881,8 @@
                             $('.coupon-msg').removeClass('text-danger');
                             $('.coupon-msg').removeClass('text-success');
                             $('.coupon-msg').hide();
+                            console.log(result.code);
+                            console.log(result.check);
                             if (result.error == 1) {
                                 $('.coupon-msg').html(result.msg).addClass('text-danger').show();
                             } else {

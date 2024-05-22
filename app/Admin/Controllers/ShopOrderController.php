@@ -21,6 +21,8 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+
 
 class ShopOrderController extends Controller
 {
@@ -31,10 +33,10 @@ class ShopOrderController extends Controller
 
     public function __construct()
     {
-        $this->statusOrder     = ShopOrderStatus::pluck('name', 'id')->all();
-        $this->statusPayment   = ShopPaymentStatus::pluck('name', 'id')->all();
-        $this->statusShipping  = ShopShippingStatus::pluck('name', 'id')->all();
-        $this->statusOrder2    = ShopOrderStatus::mapValue();
+        $this->statusOrder = ShopOrderStatus::pluck('name', 'id')->all();
+        $this->statusPayment = ShopPaymentStatus::pluck('name', 'id')->all();
+        $this->statusShipping = ShopShippingStatus::pluck('name', 'id')->all();
+        $this->statusOrder2 = ShopOrderStatus::mapValue();
         $this->statusShipping2 = ShopShippingStatus::mapValue();
     }
 
@@ -113,17 +115,17 @@ class ShopOrderController extends Controller
                 $html .= '<span style="padding-left:20px;">Người nhận: ' . $this->toname . '</span><br>';
                 $html .= '<span style="padding-left:20px;">Địa chỉ: ' . $this->address1 . ' ' . $this->address2 . '</span><br>';
                 $html .= '<span style="padding-left:20px;">Số điện thoại: ' . $this->phone . '</span><br>';
-                $html .= (!empty($this->comment)) ? '<span style="padding-left:20px;"><span style="color:red;font-weight:bold;">Ghi chú:</span> ' . $this->comment : '';
+                $html .= (!empty ($this->comment)) ? '<span style="padding-left:20px;"><span style="color:red;font-weight:bold;">Ghi chú:</span> ' . $this->comment : '';
                 return $html . "</span></span><br>";
             }, 'Thông tin nhận hàng');
             $grid->subtotal('Tiền hàng')->display(function ($price) {
                 return number_format($price);
             });
-           
+
             $grid->total('Tổng giá')->display(function ($price) {
                 return number_format($price);
             });
-         
+
             $statusOrder = $this->statusOrder;
             $grid->status('Trạng thái')->display(function ($status) use ($statusOrder) {
                 $style = "";
@@ -178,8 +180,8 @@ class ShopOrderController extends Controller
     {
         Admin::script($this->jsProcess());
         return Admin::form(ShopOrder::class, function (Form $form) {
-            $arrCustomer = array();
-            $customers   = User::all();
+            $arrCustomer = array ();
+            $customers = User::all();
             foreach ($customers as $key => $value) {
                 $arrCustomer[$value['id']] = $value['name'] . "<" . $value['email'] . ">";
             }
@@ -200,7 +202,7 @@ class ShopOrderController extends Controller
 
     public function jsProcess()
     {
-        $urlgetInfoUser    = route('getInfoUser');
+        $urlgetInfoUser = route('getInfoUser');
         $urlgetInfoProduct = route('getInfoProduct');
         return <<<JS
         $('[name="user_id"]').change(function(){
@@ -224,24 +226,24 @@ class ShopOrderController extends Controller
 
 JS;
     }
-/**
- * [getInfoUser description]
- * @param  Request $request [description]
- * @return [type]           [description]
- */
+    /**
+     * [getInfoUser description]
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
     public function getInfoUser(Request $request)
     {
         $id = $request->input('id');
         return User::find($id)->toJson();
     }
-/**
- * [getInfoProduct description]
- * @param  Request $request [description]
- * @return [type]           [description]
- */
+    /**
+     * [getInfoProduct description]
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
     public function getInfoProduct(Request $request)
     {
-        $id  = $request->input('id');
+        $id = $request->input('id');
         $sku = $request->input('sku');
         if ($id) {
             return ShopProduct::find($id)->toJson();
@@ -250,11 +252,11 @@ JS;
         }
 
     }
-/**
- * [detailOrder description]
- * @param  [type] $id [description]
- * @return [type]     [description]
- */
+    /**
+     * [detailOrder description]
+     * @param  [type] $id [description]
+     * @return [type]     [description]
+     */
     public function detailOrder($id)
     {
         return Admin::content(function (Content $content) use ($id) {
@@ -275,24 +277,98 @@ JS;
         }
         $products = ShopProduct::pluck('name', 'id')->all();
         return view('admin.OrderEdit')->with([
-            "order" => $order, "products" => $products, "statusOrder" => $this->statusOrder, "statusPayment" => $this->statusPayment, "statusShipping" => $this->statusShipping, "statusOrder2" => $this->statusOrder2, "statusShipping2" => $this->statusShipping2, 'dataTotal' => ShopOrderTotal::getTotal($id),
+            "order" => $order,
+            "products" => $products,
+            "statusOrder" => $this->statusOrder,
+            "statusPayment" => $this->statusPayment,
+            "statusShipping" => $this->statusShipping,
+            "statusOrder2" => $this->statusOrder2,
+            "statusShipping2" => $this->statusShipping2,
+            'dataTotal' => ShopOrderTotal::getTotal($id),
         ])->render();
     }
-/**
- * [postOrderUpdate description]
- * @param  Request $request [description]
- * @return [type]           [description]
- */
+
+
+
+    public function dataStatis()
+    {
+        return Admin::content(function (Content $content) {
+
+            $content->header('Thống kê');
+            // $content->description('description');
+            $content->body(
+                $this->dataStatisForm()
+            );
+        });
+    }
+
+    public function dataStatisForm()
+    {
+        $products = ShopProduct::pluck('name', 'id')->all();
+        return view('admin.dataStatis')->render();
+    }
+
+    public function showDataStatis(Request $request)
+    {
+        return Admin::content(function (Content $content) use ($request) {
+
+            $content->header('Thống kê');
+            // $content->description('description');
+            $content->body(
+                $this->showDataStatisForm($request)
+            );
+        });
+    }
+
+
+    public function showDataStatisForm($request)
+    {
+        $startDate = Carbon::parse($request->startDate);
+        $endDate = Carbon::parse($request->endDate);
+        $orders = ShopOrder::whereBetween('created_at', [$startDate, $endDate])->get();
+        $orderDetails = $orders->flatMap(function ($order) {
+            return $order->details;
+        });
+
+        $productQuantities = $orderDetails->groupBy('product_id')->map(function ($orderDetails) {
+            $product = ShopProduct::find($orderDetails->first()->product_id);
+            $quantity = $orderDetails->sum('qty');
+            $totalRevenue = $orderDetails->sum('total_price');
+            return [
+                'product' => $product,
+                'quantity' => $quantity,
+                'totalRevenue' => $totalRevenue,
+            ];
+            ;
+        });
+
+        $sortedProducts = $productQuantities->sortByDesc('quantity');
+
+        $topProducts = $sortedProducts->take(5);
+        $topUsers = ShopOrder::join('users', 'shop_order.user_id', '=', 'users.id')
+            ->select('users.id as user_id', 'users.name', 'users.email', 'users.phone', 'users.address1', DB::raw('COUNT(shop_order.id) as total_orders'))
+            ->groupBy('users.id', 'users.name', 'users.email', 'users.phone', 'users.address1',)
+            ->orderBy('total_orders', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('admin.dataStatis')->with(['orders' => $orders, 'topProducts' => $topProducts, 'topUsers' => $topUsers,])->render();
+    }
+    /**
+     * [postOrderUpdate description]
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
     public function postOrderUpdate(Request $request)
     {
-        $id           = $request->input('pk');
-        $field        = $request->input('name');
-        $value        = $request->input('value');
+        $id = $request->input('pk');
+        $field = $request->input('name');
+        $value = $request->input('value');
         $order_origin = ShopOrder::find($id);
         if ($field == 'shipping' || $field == 'discount' || $field == 'received') {
             $fieldTotal = [
-                'id'    => $id,
-                'code'  => $field,
+                'id' => $id,
+                'code' => $field,
                 'value' => $value,
             ];
             $order_id = ShopOrderTotal::updateField($fieldTotal);
@@ -307,7 +383,7 @@ JS;
         //Add history
         $dataHistory = [
             'order_id' => $order_id,
-            'content'  => 'Thay đổi <b>' . $field . '</b> từ <span style="color:blue">\'' . $order_origin[$field] . '\'</span> thành <span style="color:red">\'' . $value . '\'</span>',
+            'content' => 'Thay đổi <b>' . $field . '</b> từ <span style="color:blue">\'' . $order_origin[$field] . '\'</span> thành <span style="color:red">\'' . $value . '\'</span>',
             'admin_id' => Admin::user()->id,
             'add_date' => date('Y-m-d H:i:s'),
         ];
@@ -318,62 +394,77 @@ JS;
 
         if ($order_id) {
             $order = ShopOrder::find($order_id);
+            $order_detail = ShopOrderDetail::where('order_id', $order->id)->get();
+            if ($order->status == 3) {
+                foreach ($order_detail as $order_item) {
+                    $product = ShopProduct::where('id', $order_item->product_id)->first();
+                    $product->quantity = $product->quantity + $order_item->qty;
+                    $product->save();
+                }
+                
+            }
             if ($order->balance == 0 && $order->total != 0) {
                 $style = 'style="color:#0e9e33;font-weight:bold;"';
             } else
-            if ($order->balance < 0) {
-                $style = 'style="color:#ff2f00;font-weight:bold;"';
-            } else {
-                $style = 'style="font-weight:bold;"';
-            }
+                if ($order->balance < 0) {
+                    $style = 'style="color:#ff2f00;font-weight:bold;"';
+                } else {
+                    $style = 'style="font-weight:bold;"';
+                }
+
             $style_blance = '<tr ' . $style . ' class="data-balance"><td>Còn lại:</td><td align="right">' . number_format($order->balance) . '</td></tr>';
-            return json_encode(['stt' => 1, 'msg' => [
-                'total'          => number_format($order->total),
-                'subtotal'       => number_format($order->subtotal),
-                'shipping'       => number_format($order->shipping),
-                'discount'       => number_format($order->discount),
-                'received'       => number_format($order->received),
-                'balance'        => $style_blance,
-                'payment_status' => ($order->payment_status == 2) ? '<span style="color:#0e9e33;font-weight:bold;">' . $this->statusPayment[$order->payment_status] . '</span>' : (($order->payment_status == 3) ? '<span style="color:#ff2f00;font-weight:bold;">' . $this->statusPayment[$order->payment_status] . '</span>' : $this->statusPayment[$order->payment_status]),
-            ],
+            return json_encode([
+                'stt' => 1,
+                'msg' => [
+                    'total' => number_format($order->total),
+                    'subtotal' => number_format($order->subtotal),
+                    'shipping' => number_format($order->shipping),
+                    'discount' => number_format($order->discount),
+                    'received' => number_format($order->received),
+                    'balance' => $style_blance,
+                    'payment_status' => ($order->payment_status == 2) ? '<span style="color:#0e9e33;font-weight:bold;">' . $this->statusPayment[$order->payment_status] . '</span>' : (($order->payment_status == 3) ? '<span style="color:#ff2f00;font-weight:bold;">' . $this->statusPayment[$order->payment_status] . '</span>' : $this->statusPayment[$order->payment_status]),
+                    'order_detail' => $order_detail,
+                    'order' => $order,
+
+                ],
             ]);
         } else {
             return json_encode(['stt' => 0, 'msg' => 'Error ']);
         }
     }
 
-/**
- * [postOrderEdit description]
- * @param  Request $request [description]
- * @return [type]           [description]
- */
+    /**
+     * [postOrderEdit description]
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
     public function postOrderEdit(Request $request)
     {
         //Add new item
         if ((int) $request->input('addItem-form') != 0) {
             $order_id = (int) $request->input('addItem-form');
-            $pQty     = $request->input('pQty');
-            $pAttr    = $request->input('pAttr');
-            $pId      = $request->input('pId');
-            $pPrice   = $request->input('pPrice');
-            $arrData  = array();
-            $listNew  = array();
+            $pQty = $request->input('pQty');
+            $pAttr = $request->input('pAttr');
+            $pId = $request->input('pId');
+            $pPrice = $request->input('pPrice');
+            $arrData = array();
+            $listNew = array();
             foreach ($pId as $key => $value) {
                 if ($value['value'] == 0) {
                     continue;
                 }
 
-                $product                  = ShopProduct::find($value['value']);
+                $product = ShopProduct::find($value['value']);
                 $listNew[$value['value']] = $product->name;
-                $arrData[]                = array(
-                    'order_id'    => $order_id,
-                    'product_id'  => $value['value'],
-                    'name'        => $product->name,
-                    'qty'         => (int) $pQty[$key]['value'],
-                    'option'      => $pAttr[$key]['value'],
-                    'price'       => (int) $pPrice[$key]['value'],
+                $arrData[] = array(
+                    'order_id' => $order_id,
+                    'product_id' => $value['value'],
+                    'name' => $product->name,
+                    'qty' => (int) $pQty[$key]['value'],
+                    'option' => $pAttr[$key]['value'],
+                    'price' => (int) $pPrice[$key]['value'],
                     'total_price' => (int) $pPrice[$key]['value'] * (int) $pQty[$key]['value'],
-                    'sku'         => $product->sku,
+                    'sku' => $product->sku,
                 );
             }
             $rs = (new ShopOrderDetail)->insert($arrData);
@@ -381,7 +472,7 @@ JS;
             //Add history
             $dataHistory = [
                 'order_id' => $order_id,
-                'content'  => 'Thêm mới sản phẩm (' . implode(",", $listNew) . ')',
+                'content' => 'Thêm mới sản phẩm (' . implode(",", $listNew) . ')',
                 'admin_id' => Admin::user()->id,
                 'add_date' => date('Y-m-d H:i:s'),
             ];
@@ -404,26 +495,26 @@ JS;
 
         //Remove item
         if ($request->input('removeItem-form') == 1) {
-            $pId        = (int) $request->input('pId');
+            $pId = (int) $request->input('pId');
             $itemDetail = (new ShopOrderDetail)->where('id', $pId)->first();
-            $order_id   = $itemDetail->order_id;
+            $order_id = $itemDetail->order_id;
             $product_id = $itemDetail->product_id;
-            $qty        = $itemDetail->qty;
-            $rs         = $itemDetail->delete(); //Remove item from shop order detail
+            $qty = $itemDetail->qty;
+            $rs = $itemDetail->delete(); //Remove item from shop order detail
             //Update total price
             $subtotal = ShopOrderDetail::select(DB::raw('sum(total_price) as subtotal'))
                 ->where('order_id', $order_id)
                 ->first()->subtotal;
             $updateSubTotal = ShopOrderTotal::updateSubTotal($order_id, $subtotal);
-            $item           = ShopProduct::find($product_id);
-            $item->stock    = $item->stock + $qty; // Restore stock
-            $item->sold     = $item->sold - $qty; // Subtract sold
+            $item = ShopProduct::find($product_id);
+            $item->stock = $item->stock + $qty; // Restore stock
+            $item->sold = $item->sold - $qty; // Subtract sold
             $item->save();
 
             //Add history
             $dataHistory = [
                 'order_id' => $order_id,
-                'content'  => 'Xóa sản phẩm pID#' . $pId,
+                'content' => 'Xóa sản phẩm pID#' . $pId,
                 'admin_id' => Admin::user()->id,
                 'add_date' => date('Y-m-d H:i:s'),
             ];
@@ -440,25 +531,25 @@ JS;
 
         //Edit item
         if ($request->input('editItem-form') != 0) {
-            $pId      = (int) $request->input('pId');
-            $pQty     = (int) $request->input('pQty');
-            $pPrice   = (int) $request->input('pPrice');
-            $pName    = $request->input('pName');
-            $pAttr    = $request->input('pAttr');
+            $pId = (int) $request->input('pId');
+            $pQty = (int) $request->input('pQty');
+            $pPrice = (int) $request->input('pPrice');
+            $pName = $request->input('pName');
+            $pAttr = $request->input('pAttr');
             $order_id = (int) $request->input('editItem-form');
-            $data     = array(
-                'qty'         => $pQty,
-                'price'       => $pPrice,
-                'name'        => $pName,
+            $data = array(
+                'qty' => $pQty,
+                'price' => $pPrice,
+                'name' => $pName,
                 'total_price' => $pQty * $pPrice,
-                'option'      => $pAttr,
+                'option' => $pAttr,
             );
             $rs = (new ShopOrderDetail)->updateDetail($pId, $data);
 
             //Add history
             $dataHistory = [
                 'order_id' => $order_id,
-                'content'  => 'Chỉnh sửa sản phẩm #' . $pId,
+                'content' => 'Chỉnh sửa sản phẩm #' . $pId,
                 'admin_id' => Admin::user()->id,
                 'add_date' => date('Y-m-d H:i:s'),
             ];

@@ -204,12 +204,9 @@
                         </div>
                     @endforeach
 
-
-
-
                 </div>
             </div>
-            {!! $products->links($theme . '.components.my-pagination') !!}
+            {!! $products->links($theme . '.my-pagination') !!}
         </div>
     </div>
 </main>

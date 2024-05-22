@@ -48,7 +48,7 @@
                                                         type="number" name="phone" value="" size="40"
                                                         class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required"
                                                         aria-required="true" aria-invalid="false"></span> </label></p>
-                                        <p><label> Địa chỉ nhận hàng (*)<br>
+                                        <p><label> Địa chỉ (*)<br>
                                                 <span class="wpcf7-form-control-wrap your-name"><input required
                                                         type="text" name="address1" value="" size="40"
                                                         class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required"

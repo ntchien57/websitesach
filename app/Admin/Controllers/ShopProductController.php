@@ -16,6 +16,7 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 use Illuminate\Http\Request;
 
+
 class ShopProductController extends Controller
 {
     use ModelForm;
@@ -100,6 +101,9 @@ class ShopProductController extends Controller
             $grid->column('created_at', 'Ngày tạo')->display(function ($created_at) {
                 return date('d-m-Y', strtotime($created_at));
             });
+            $grid->column('flash_active', 'Giảm giá giờ vàng')->display(function ($flashActive) {
+                return $flashActive ? '<span class="label label-success">Đang diễn ra</span>' : '<span class="label label-danger">Chưa diễn ra</span>';
+            });
             // $grid->updated_at('Lần cuối chỉnh sửa');
             $grid->model()->orderBy('id', 'desc');
             $grid->disableExport();
@@ -141,7 +145,10 @@ class ShopProductController extends Controller
                 $form->text('quantity', 'Tồn kho')->options(['digits' => 0]);
                 $form->currency('unpromotion_price', 'Giá trước khi giảm')->symbol('VND')->options(['digits' => 0]);
                 $form->currency('flash_price', 'Giảm giá giờ vàng')->symbol('VND')->options(['digits' => 0]);
-              
+                $form->datetime('start_time', 'Thời gian bắt đầu');
+                $form->datetime('end_time', 'Thời gian kết thúc');
+                
+
                 // $form->divide();
                 $form->radio('type', 'Loại sản phẩm')->options($this->arrType)->default('0');
               
